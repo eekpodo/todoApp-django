@@ -32,8 +32,6 @@ jobs:
           tar -czvf ./deploy/deployment_package.tar.gz -C . .
 
   
-      
-
     - name: Upload to S3
       run: |
         aws s3 cp deploy/deployment_package.tar.gz s3://my-deployment-bucket-arora/deployment_package.tar.gz
