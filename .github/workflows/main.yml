@@ -33,7 +33,7 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/myapi:latest
+          docker pull eekpodo/myapi:latest
           docker stop my-website || true
           docker rm my-website || true
-          docker run -d --name my-website -p 8000:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/myapi:latest
+          docker run -d --name my-website -p 8000:8000 eekpodo/myapi:latest
