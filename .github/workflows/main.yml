@@ -26,7 +26,6 @@ jobs:
         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/myapi:latest
 
 
-
     - name: Deploy to EC2 instance
       uses: appleboy/ssh-action@master
       with:
