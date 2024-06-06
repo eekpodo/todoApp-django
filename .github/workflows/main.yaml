@@ -1,53 +1,36 @@
-
 name: Deploy website to EC2 using AWS CodeDeploy
 
 on:
   push:
     branches:
-      - main
+      - devops
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/todo-api .
-        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/todo-api:latest
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/todoapp .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/todoapp:latest
 
-
-    - name: Create deployment package
-      run: |
-          mkdir -p deploy
-          tar -czvf ./deploy/deployment_package.tar.gz -C . .
-
-  
-    - name: Upload to S3
-      run: |
-        aws s3 cp deploy/deployment_package.tar.gz s3://my-deployment-bucket-arora/deployment_package.tar.gz
-        # env:
-        # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        # AWS_REGION: us-east-2
-
-    - name: Deploy to AWS CodeDeploy
-      run: |
-        aws deploy create-deployment \
-          --application-name todo-api \
-          --deployment-group-name todo-deployment-group \
-          --s3-location bucket=my-deployment-bucket-arora,bundleType=tar.gz,key=deployment_package.tar.gz
-
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: us-east-2
+      - name: Deploy to AWS CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name todoapp \
+            --deployment-group-name todoapp-deployment-group \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-2
