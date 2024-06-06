@@ -24,6 +24,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/todoapp .
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/todoapp:latest
 
+
       - name: Deploy to AWS CodeDeploy
         run: |
           aws deploy create-deployment \
